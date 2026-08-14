@@ -1,3 +1,5 @@
+#ifndef CONTACT_H
+#define CONTACT_H
 #include <iostream>
 
 class Contact
@@ -12,3 +14,5 @@ class Contact
         Contact();
         ~Contact();
 };
+
+#endif

@@ -1,10 +1,10 @@
 CXX = c++
-# INCLUDE = -I includes
+INCLUDE = -I include
 FLAGS = -Wall -Wextra -Werror -std=c++98 $(INCLUDE)
 
 NAME = megaphone
 
-SRC = main.cpp megaphone.cpp
+SRC = main.cpp Contact.cpp PhoneBook.cpp
 
 OBJDIR = obj
 OBJ = $(SRC:%.cpp=$(OBJDIR)/%.o)
