@@ -5,14 +5,14 @@
 int main(int argc, char **argv)
 {
     Megaphone megaphone;
-    int i = 0;
+    int i = 1;
 
     if (argc == 1)
     {
         megaphone.stdoutNoise();
         return (0);
     }
-    while (argv[i + 1])
+    while (argv[i])
     {
         megaphone.stdoutDynamic(argv[i]);
         i++;
