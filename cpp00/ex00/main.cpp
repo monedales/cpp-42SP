@@ -1,6 +1,6 @@
 #include <string>
 #include <iostream>
-#include "megaphone.cpp"
+#include "Megaphone.cpp"
 
 int main(int argc, char **argv)
 {
