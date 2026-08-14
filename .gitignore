@@ -1,0 +1,33 @@
+# Executables
+*.out
+a.out
+megaphone
+
+# Object files
+*.o
+obj/
+
+# Libraries
+*.a
+
+# MacOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Debug
+*.dSYM/
+*.d
+
+# Logs
+*.log
+
+
+# Test files
+tester/
+temp_*
+
+# 42 subject
+*.pdf
