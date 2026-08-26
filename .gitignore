@@ -24,10 +24,12 @@ obj/
 # Logs
 *.log
 
+Account.hpp
 
 # Test files
 tester/
 temp_*
+tests.cpp
 
 # 42 subject
 *.pdf
