@@ -9,6 +9,10 @@ class PhoneBook
         int     count;
     public:
     PhoneBook();
+    ~PhoneBook();
+    
+    void    addContact();
+    
     
 };
 #endif
