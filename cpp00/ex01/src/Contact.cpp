@@ -1,15 +1,9 @@
-#include <iostream>
 #include "Contact.hpp"
 
-Contact::Contact()
-{
-    std::cout << "Contact Constructor called" << std::endl;
-}
 
-Contact::~Contact()
-{
-    std::cout << "Contact Destructor called" << std::endl;
-}
+Contact::Contact() {}
+
+Contact::~Contact() {}
 
 void Contact::SetField(e_field field, std::string value)
 {
@@ -35,27 +29,27 @@ void Contact::SetField(e_field field, std::string value)
     }
 }
 
-std::string Contact::getFirstName() const
+std::string Contact::getFirstName(void) const
 {
     return this->firstName;
 }
 
-std::string Contact::getLastName() const
+std::string Contact::getLastName(void) const
 {
     return this->lastName;
 }
 
-std::string Contact::getNickName() const
+std::string Contact::getNickName(void) const
 {
     return this->nickName;
 }
 
-std::string Contact::getPhonenumber() const
+std::string Contact::getPhonenumber(void) const
 {
     return this->phone;
 }
 
-std::string Contact::getSecret() const
+std::string Contact::getSecret(void) const
 {
     return this->darkestSecret;
 }

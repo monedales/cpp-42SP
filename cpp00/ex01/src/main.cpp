@@ -1,21 +1,21 @@
 #include <iostream>
+#include <string>
 #include "PhoneBook.hpp"
-#include "Contact.hpp"
+#include "Colors.hpp"
 
 
 static void	showMenu(void)
 {
-	std::cout << "\033[38;2;200;162;200m Welcome to the PhoneBook Software! \033[m\n";
-	std::cout << "Available commands: \n";
-	std::cout << "\033[35mADD\033[m\t- Add a new contact into the phoneBook\n";
-	std::cout << "\033[35mSEARCH\033[m\t- Display the saved contacts\n";
-	std::cout << "\033[35mEXIT\033[m\t- Exits the program (loses all information)\n";
+	std::cout << BOLD << LILAC << "Welcome to ✨ Mona's ✨ PhoneBook !" << RESET << "\n";
+	std::cout << LILAC << "Available commands 💅🏼: \n";
+	std::cout << BOLD << PINK  << "ADD"    << RESET << PEACH << "\t- Add a new contact into the phoneBook\n";
+	std::cout << BOLD << MINT  << "SEARCH" << RESET << PEACH << "\t- Display the saved contacts and then search for a specific entry\n";
+	std::cout << BOLD << CYAN << "EXIT"   << RESET << PEACH << "\t- Exits the program (loses all information)\n" << LILAC;
 }
 
 int main(void)
 {
     PhoneBook phoneBook;
-    // Contact contact;
     std::string cmd;
 
     showMenu();
@@ -26,10 +26,12 @@ int main(void)
 			break ;
 		else if (cmd == "ADD")
 			phoneBook.addContact();
-		// else if (cmd == "SEARCH")
-		// 	phoneBook.listContacts();
+		else if (cmd == "SEARCH")
+        {
+			phoneBook.listContacts();
+            phoneBook.showContact();
+        }
 		else if (cmd == "EXIT")
 			return (0);
 	}
-
 }

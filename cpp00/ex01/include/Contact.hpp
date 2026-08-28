@@ -1,6 +1,7 @@
 #ifndef CONTACT_H
 #define CONTACT_H
-#include <iostream>
+#include <string>
+
 
 class Contact
 {
@@ -22,12 +23,11 @@ class Contact
 		Contact();
 		~Contact();
 		void 		SetField(e_field field, std::string value);
-		std::string	getFirstName() const;
-		std::string getLastName() const;
-		std::string getNickName() const;
-		std::string	getPhonenumber() const;
-		std::string	getSecret() const;
-		// std::string	GetField(e_field field);
+		std::string	getFirstName(void) const;
+		std::string getLastName(void) const;
+		std::string getNickName(void) const;
+		std::string	getPhonenumber(void) const;
+		std::string	getSecret(void) const;
 };
 
 #endif
