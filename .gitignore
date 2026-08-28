@@ -2,6 +2,7 @@
 *.out
 a.out
 megaphone
+phonebook
 
 # Object files
 *.o
