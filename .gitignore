@@ -34,3 +34,5 @@ tests.cpp
 
 # 42 subject
 *.pdf
+
+cheatsheet.md
