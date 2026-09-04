@@ -3,6 +3,8 @@
 a.out
 megaphone
 phonebook
+zombie
+zombieHorde
 
 # Object files
 *.o
