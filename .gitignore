@@ -5,6 +5,7 @@ megaphone
 phonebook
 zombie
 zombieHorde
+refs
 
 # Object files
 *.o
