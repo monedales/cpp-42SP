@@ -4,7 +4,7 @@ FLAGS = -Wall -Wextra -Werror -std=c++98 $(INCLUDE)
 
 NAME = megaphone
 
-SRC = megaphone.cpp
+SRC = Megaphone.cpp
 
 OBJDIR = obj
 OBJ = $(SRC:%.cpp=$(OBJDIR)/%.o)
@@ -21,8 +21,9 @@ CYAN = $(ESC)36m
 WHITE = $(ESC)37m
 LILAC_TRUE   = \033[38;2;200;162;200m
 
-$(NAME) :  format $(OBJ)
+$(NAME) : $(OBJ)
 	@$(CXX) $(FLAGS) $(OBJ) -o $@
+	@$(MAKE) banner --no-print-directory
 
 $(OBJDIR)/%.o: %.cpp 
 	@mkdir -p $(dir $@)
@@ -41,10 +42,22 @@ fclean: clean
 
 re: fclean all
 
-format:
-	@echo "$(LILAC_TRUE) \n made by: mona ✨ — 42 São Paulo, 2026\n$(RESET)"
+banner:
+	@echo ""
+	@printf '%b\n' "$(LILAC_TRUE) ██████╗██████╗ ██████╗  ██████╗  ██████╗ $(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE)██╔════╝██╔══██╗██╔══██╗██╔═████╗██╔═████╗$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE)██║     ██████╔╝██████╔╝██║██╔██║██║██╔██║$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE)██║     ██╔═══╝ ██╔═══╝ ████╔╝██║████╔╝██║$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE)╚██████╗██║     ██║     ╚██████╔╝╚██████╔╝$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE) ╚═════╝╚═╝     ╚═╝      ╚═════╝  ╚═════╝ $(RESET)"
+	@echo ""
+	@printf '%b\n' "$(LILAC_TRUE)          📢 Ex00 — Megaphone$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE)      made by: mona ✨ — 42 São Paulo, 2026$(RESET)"
+	@echo ""
+	@printf '%b\n' "$(GREEN)$(BOLD)  Compiled successfully! Ready to shout! ✨$(RESET)"
+	@echo ""
 
-.PHONY: all re fclean clean format
+.PHONY: all re fclean clean banner
 
 # # **************************************************************************** #
 # # Detect terminal width and adjust behavior
@@ -75,7 +88,7 @@ define show_progress
     else \
         printf "\r\033[K$(YELLOW)$(BOLD)🔄  $(RESET)$(GREEN)$(PROGRESS)$(WHITE)$(EMPTY)$(RESET) $(PERCENT)%% $(CYAN)$(SHORT_PATH)$(RESET)"; \
         if [ $(COMPILED_COUNT) -eq $(TOTAL_FILES) ]; then \
-            printf "\n$(GREEN)$(BOLD)\n ✅✅✅ $(NAME) OK ✅✅✅$(RESET)\n\n"; \
+            printf "\n"; \
         fi; \
     fi
 endef
