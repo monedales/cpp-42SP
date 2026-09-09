@@ -2,8 +2,10 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <limits>
 #include "Colors.hpp"
 
+const int PhoneBook::MAX_CONTACTS;
 
 PhoneBook::PhoneBook()
 {
@@ -26,18 +28,36 @@ static std::string formatColumn(std::string value)
     }
 }
 
-static std::string validateField(std::string prompt)
+static void handleInputFailure(bool &quit)
+{
+    if (std::cin.eof())
+    {
+        std::cout << "\nYOU SHALL NOT PASS! 🧙‍♂️⚔️\nstop trying to make me fail in the evaluation 👀" << std::endl;
+        quit = true;
+        return ;
+    }
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+static std::string validateField(std::string prompt, bool &quit)
 {
     std::string value;
 
-    std::cout << prompt;
-    std::getline(std::cin, value);
-    while (value.empty())
+    while (true)
     {
         std::cout << prompt;
         std::getline(std::cin, value);
+        if (std::cin.fail())
+        {
+            handleInputFailure(quit);
+            if (quit)
+                return (value);
+            continue ;
+        }
+        if (!value.empty())
+            return (value);
     }
-    return (value);
 }
 
 static bool parseIndex(std::string text, int &result)
@@ -69,44 +89,36 @@ std::string PhoneBook::formatRow(int index)
 void PhoneBook::addContact(void)
 {
     Contact contact;
-    std::string firstname, lastName, nickName, phone, darkestSecret;
+    const Contact::e_field fields[5] = {Contact::FIRST_NAME, Contact::LAST_NAME, Contact::NICKNAME, Contact::PHONE, Contact::DARK_SECRET};
+    const std::string questions[5] = {
+        "Type your first name: ",
+        "Type your last name: ",
+        "Type your nickname: ",
+        "Type your phone number: ",
+        "Type your darkest secret 👀: "
+    };
+    bool quit = false;
 
     for (int i = 0; i < 5; i++)
     {
-        switch (i)
-        {
-        case 0:
-            firstname = validateField(BOLD + PEACH + "Type your first name: " + RESET + LILAC);
-            contact.SetField(Contact::FIRST_NAME, firstname);
-            break;
-        case 1:
-            lastName = validateField(BOLD + PEACH + "Type your last name: " + RESET + LILAC);
-            contact.SetField(Contact::LAST_NAME, lastName);
-            break;
-        case 2:
-            nickName = validateField(BOLD + PEACH + "Type your nickname: " + RESET + LILAC);
-            contact.SetField(Contact::NICKNAME, nickName);
-            break;
-        case 3:
-            phone = validateField(BOLD + PEACH + "Type your phone number: " + RESET + LILAC);
-            contact.SetField(Contact::PHONE, phone);
-            break;
-        case 4:
-            darkestSecret = validateField(BOLD + PEACH + "Type your darkest secret 👀: " + RESET + LILAC);
-            contact.SetField(Contact::DARK_SECRET, darkestSecret);
-            break;
-        default:
-            break;
-        }
+        std::string value = validateField(BOLD + PEACH + questions[i] + RESET + LILAC, quit);
+        if (quit)
+            return ;
+        contact.SetField(fields[i], value);
     }
-    contacts[count % 8] = contact;
+    contacts[count % MAX_CONTACTS] = contact;
     count++;
-    if (validCount < 8)
+    if (validCount < MAX_CONTACTS)
         validCount++;
 }
 
 void PhoneBook::listContacts(void)
 {
+    std::string separator = "|";
+    std::cout << BOLD << formatColumn("index") << separator 
+        << formatColumn("first name") << separator 
+        << formatColumn("last name") << separator 
+        << formatColumn("nickname") << RESET + LILAC << std::endl;
     for (int i = 0; i < validCount; i++)
         std::cout << formatRow(i) << std::endl;
     std::cout << std::endl;
@@ -122,10 +134,13 @@ void PhoneBook::showContact(void)
     int index;
     std::string indexText;
     bool valid = false;
+    bool quit = false;
 
     while (!valid)
     {
-        indexText = validateField(BOLD + PEACH + "Type the contact's index you want to see: " + RESET + LILAC);
+        indexText = validateField(BOLD + PEACH + "Type the contact's index you want to see: " + RESET + LILAC, quit);
+        if (quit)
+            return ;
         if (!parseIndex(indexText, index))
             std::cout << RED << "This is not a valid input! Please type a valid number." << LILAC << std::endl;
         else if (index >= 0 && index < validCount)

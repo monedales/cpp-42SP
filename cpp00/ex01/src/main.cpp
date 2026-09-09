@@ -33,5 +33,8 @@ int main(void)
         }
 		else if (cmd == "EXIT")
 			return (0);
+		else
+			std::cout << "YOU SHALL NOT PASS! 🧙‍♂️⚔️\nthis is not a valid command 👀" << std::endl;
+		
 	}
 }
