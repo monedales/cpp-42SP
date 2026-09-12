@@ -163,6 +163,49 @@ Foo::Foo(...) : name(name), weapon(weapon) {}
 
 ---
 
+## 13. ifstream / ofstream: streams de arquivo
+
+Funcionam como `cin`/`cout`, só trocando terminal por arquivo. Mesma sintaxe de `getline` e `<<` que já usei no cpp00.
+
+```cpp
+#include <fstream>
+
+std::ifstream file_in(nome.c_str());     // abre pra LEITURA
+std::ofstream file_out(nome.c_str());    // abre pra ESCRITA (cria/sobrescreve)
+
+if (!file_in.is_open())                    // checagem de erro, igual checar NULL num ponteiro
+    // tratar erro
+
+std::string linha;
+while (std::getline(file_in, linha))       // lê linha por linha até acabar o arquivo
+{
+    file_out << linha << std::endl;         // escreve no arquivo, getline não guarda o \n, precisa recriar
+}
+```
+
+Em C++98, o construtor de `ifstream`/`ofstream` só aceita `const char*`, não `std::string` direto, por isso `.c_str()` é necessário pra converter.
+
+Abrir um `ofstream` com o mesmo nome mais de uma vez (ex: dentro de um loop) sobrescreve o conteúdo a cada vez, abrir uma única vez, fora do loop.
+
+## 14. find/substr como alternativa a replace
+
+Sem usar `std::string::replace`, dá pra substituir substrings manualmente com `find` (acha a posição) e `substr` (corta pedaços), concatenando com `+`.
+
+```cpp
+size_t pos = texto.find(s1);              // posição onde s1 começa, ou std::string::npos se não achar
+std::string antes = texto.substr(0, pos);          // do início até onde s1 começa
+std::string depois = texto.substr(pos + s1.length()); // do fim de s1 até o final
+texto = antes + s2 + depois;                          // monta a string final com s2 no lugar
+```
+
+Pra substituir TODAS as ocorrências (não só a primeira), repetir num loop, sempre buscando na versão já atualizada do texto (não na original, senão fica preso na mesma ocorrência), e avançando a busca pra depois do `s2` inserido (`find(s1, pos + s2.length())`), evitando reprocessar o que acabou de ser inserido.
+
+`std::string::npos` é o valor especial que representa "não encontrado", equivalente ao `-1` que eu esperava de C, mas com tipo e nome próprios.
+
+A substituição é "cega": troca qualquer ocorrência da sequência de caracteres, mesmo dentro de outra palavra (ex: `s1="b"` troca o `b` de `"oba"`, sem respeitar limite de palavra). Isso é o comportamento esperado do exercício, não é bug.
+
+---
+
 ## Dúvidas / a aprofundar
 
 - [ ] Ponteiros para membros de função (ex05).

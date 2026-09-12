@@ -7,10 +7,11 @@ zombie
 zombieHorde
 refs
 fight
+losers
 # Object files
 *.o
 obj/
-
+*.txt*
 # Libraries
 *.a
 
