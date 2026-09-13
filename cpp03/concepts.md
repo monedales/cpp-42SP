@@ -114,6 +114,22 @@ Faz sentido: o filho pode depender de partes do pai já existirem pra funcionar,
 
 ---
 
+## 9. Custo de ação (energia) é fixo — não confundir com a força da ação (dano)
+
+```cpp
+this->energyPoints--;   // sempre -1, não importa o attackDamage
+```
+
+`attackDamage` varia por classe (0 no `ClapTrap`, 20 no `ScavTrap`, 30 no `FragTrap`) — é **quanto dano** o ataque causa no alvo. O custo de energia pra realizar a ação é outra coisa, fixa em `1` pra todas as classes ("atacar e reparar custam 1 ponto de energia cada", direto do subject). São dois números independentes: um mede a força do golpe, o outro mede o "combustível" gasto pra desferir ele. Um `FragTrap` com 100 de energia não gasta menos por ataque — ele só aguenta **mais ataques no total** antes de zerar.
+
+---
+
+## 10. Nem toda subclasse sobrescreve os mesmos métodos
+
+`ScavTrap` sobrescreve `attack()` (a régua pede mensagem diferente). `FragTrap` **não** sobrescreve `attack()` — o subject só pede mensagens diferentes de construtor/destrutor pra ele, então `attack()` continua vindo direto do `ClapTrap`, sem redeclarar nada. Override é uma ferramenta que você usa **onde precisa**, não algo que se aplica igual em todas as subclasses só porque uma delas usou.
+
+---
+
 ## Dúvidas / a aprofundar
 
 - [ ] Revisitar a decisão do construtor de cópia delegar pro `operator=` quando aparecer a primeira classe com memória alocada dinamicamente (mesma nota do cpp02).
