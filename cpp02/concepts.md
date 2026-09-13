@@ -136,6 +136,53 @@ Como método da classe, `Fixed` teria que estar do lado esquerdo do `<<` (`fixed
 
 ---
 
+## 11. Métodos estáticos: sem `this`, e `static` só aparece no `.hpp`
+
+```cpp
+// .hpp
+static Fixed &min(Fixed &a, Fixed &b);
+
+// .cpp — sem static, só Fixed::
+Fixed &Fixed::min(Fixed &a, Fixed &b) { ... }
+```
+
+Método estático pertence à classe, não a um objeto — chama-se `Fixed::min(a, b)`, sem instância na frente, e não existe `this` dentro dele. `static` não é parte do "tipo" da função (diferente do `const` no final de método, que muda a assinatura), é só uma instrução de como ela é chamada — por isso não se repete na definição fora da classe.
+
+---
+
+## 12. Duas versões (const/não-const) pra preservar mutabilidade do retorno
+
+```cpp
+static Fixed &min(Fixed &a, Fixed &b);                     // aceita e devolve não-const
+static const Fixed &min(const Fixed &a, const Fixed &b);   // aceita e devolve const
+```
+
+Se só existisse a versão `const`, chamar `min` com dois `Fixed` não-const ainda funcionaria (conversão implícita pra `const`), mas o retorno seria `const Fixed&` — perdendo a possibilidade de modificar o resultado depois, mesmo os originais não sendo `const`. Ter as duas versões garante que a "constância" de entrada se mantém na saída.
+
+---
+
+## 13. O "menor ϵ representável" é só +1 no valor cru
+
+```cpp
+this->value += 1;   // ++, epsilon
+this->value -= 1;   // --
+```
+
+Como `value` já é o número real multiplicado por `2^fractBits`, cada unidade inteira dele vale `1/2^fractBits` no mundo real (aqui, `1/256`). Por isso o menor incremento representável não precisa de cálculo nenhum — é literalmente somar `1` ao inteiro cru. Testado e confirmado: `++a` a partir de `0` deu `0.00390625`, que é `1/256`.
+
+---
+
+## 14. Pré vs pós incremento: assinatura e tipo de retorno
+
+```cpp
+Fixed &Fixed::operator++(void);   // pré: ++a — modifica e retorna o próprio objeto (referência)
+Fixed  Fixed::operator++(int);    // pós: a++ — guarda cópia do valor antigo, modifica o original, retorna a cópia
+```
+
+O `int` no pós-incremento nunca é usado — existe só pra dar uma assinatura diferente da versão pré, permitindo o compilador escolher a certa. A diferença de tipo de retorno reflete o que cada um "significa": `++a` já é o valor novo (por isso retorna referência ao próprio objeto), enquanto `a++` precisa devolver o valor de **antes** da mudança (por isso precisa copiar antes de modificar, e retorna por valor, não por referência — devolver referência pra uma cópia local que vai morrer ao sair da função seria um dangling pointer).
+
+---
+
 ## Dúvidas / a aprofundar
 
 - [ ] Revisitar a decisão do construtor de cópia delegar pro `operator=` quando aparecer a primeira classe com memória alocada dinamicamente.
