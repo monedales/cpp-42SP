@@ -94,6 +94,48 @@ Isso não é uma referência constante (como `const std::string &` do cpp01, que
 
 ---
 
+## 7. Deslocamento de bits (`<<`/`>>`) pra escalar o valor fixo
+
+```cpp
+this->value = i_num * (1 << fractBits);   // int -> fixed: escala pra cima
+return (this->value >> this->fractBits);  // fixed -> int: escala pra baixo, trunca a fração
+```
+
+`<<` desloca bits pra esquerda, equivalente a multiplicar por `2^n`. `>>` desloca pra direita, equivalente a dividir por `2^n` (descartando o resto — por isso `toInt()` trunca em vez de arredondar). Usei `i_num * (1 << fractBits)` em vez de `i_num << fractBits` direto porque deslocar um `int` **negativo** com `<<` é comportamento indefinido em C++98; multiplicar por um número positivo não tem esse problema.
+
+---
+
+## 8. Float ↔ Fixed: multiplicar/dividir pelo fator de escala
+
+```cpp
+this->value = static_cast<int>(roundf(f_num * (1 << this->fractBits)));  // float -> fixed
+return (static_cast<float>(this->value) / (1 << this->fractBits));        // fixed -> float
+```
+
+Não dá pra usar `<<`/`>>` num `float` (são operadores de bits, só existem pra tipos inteiros), então a conversão vira multiplicação/divisão de verdade. Como multiplicar um float pelo fator de escala pode não dar um número inteiro exato, `roundf` arredonda antes de converter pra `int` com `static_cast`. Lendo de dentro pra fora: primeiro escala, depois arredonda, depois converte de tipo.
+
+---
+
+## 9. `operator<<` precisa ser função livre, não método
+
+```cpp
+std::ostream &operator<<(std::ostream &o, const Fixed &f)
+{
+    o << f.toFloat();
+    return o;
+}
+```
+
+Como método da classe, `Fixed` teria que estar do lado esquerdo do `<<` (`fixed.operator<<(...)`) — mas quem fica à esquerda na prática é o `std::cout`. Por isso a função vive fora da classe (declarada no `.hpp` depois do `};`), usando só os métodos públicos do `Fixed` (`toFloat()`), sem precisar de `friend`. Retorna `std::ostream&` pelo mesmo motivo do `operator=` retornar `Fixed&`: permitir encadear (`std::cout << a << std::endl;`).
+
+---
+
+## 10. Palavra reservada como nome de parâmetro
+
+`float`, `int`, `class` etc. são palavras-chave da linguagem — não podem ser usadas como nome de variável ou parâmetro (ex: `const Fixed &float` não compila). Erro fácil de cometer quando o nome "óbvio" pro parâmetro é justamente o tipo que ele representa.
+
+---
+
 ## Dúvidas / a aprofundar
 
 - [ ] Revisitar a decisão do construtor de cópia delegar pro `operator=` quando aparecer a primeira classe com memória alocada dinamicamente.
