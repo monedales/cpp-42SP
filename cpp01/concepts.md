@@ -206,8 +206,56 @@ A substituição é "cega": troca qualquer ocorrência da sequência de caracter
 
 ---
 
+## 15. Ponteiros para métodos de classe (evitar floresta de if/else)
+
+Assim como um ponteiro pode guardar o endereço de uma variável, também pode guardar o endereço de um método de uma classe, e chamar ele depois, indiretamente. Útil pra escolher entre vários métodos sem escrever `if/else if/else`.
+
+### A sintaxe, por partes
+
+```cpp
+void (Harl::*funcoes[4])(void) = {&Harl::debug, &Harl::info, &Harl::warning, &Harl::error};
+```
+
+- `void ... (void)`: tipo de retorno e de parâmetro da função que esse ponteiro pode apontar, precisa bater exatamente com a assinatura dos métodos (`debug`, `info`, `warning`, `error` são todos `void algumaCoisa(void)`).
+- `(Harl::*funcoes[4])`: `Harl::*` diz "isso é um ponteiro pra método da classe `Harl`", e `funcoes[4]` diz que é um array de 4 desses ponteiros.
+- `= {&Harl::debug, ...}`: inicializa o array com os endereços dos métodos. O `&` aqui é o mesmo "endereço de" do ex02, só que aplicado a um método em vez de uma variável.
+
+### Por que não dá pra chamar direto com `functions[i]()`
+
+`this->algumMetodo()` funciona porque `algumMetodo` já é, por si só, um método fixo e conhecido da classe, o compilador sabe exatamente qual código executar. Já `functions[i]` é uma variável que guarda um endereço que pode ser qualquer um dos métodos, dependendo do valor de `i`, isso só é decidido em tempo de execução.
+
+Por isso existe um operador especial pra "resolver" esse ponteiro antes de chamar: `.*` (quando se tem o objeto direto) ou `->*` (quando se tem um ponteiro pro objeto, como `this` dentro de um método da própria classe):
+
+```cpp
+(this->*funcoes[i])();   // parênteses obrigatórios ao redor
+```
+
+### O padrão completo: dois arrays paralelos + loop
+
+```cpp
+void Harl::complain(const std::string &level)
+{
+    static void (Harl::*complaints[4])(void) = {&Harl::debug, &Harl::info, &Harl::warning, &Harl::error};
+    static std::string levels[4] = {"DEBUG", "INFO", "WARNING", "ERROR"};
+
+    for (size_t i = 0; i < 4; i++)
+    {
+        if (levels[i] == level)
+        {
+            (this->*complaints[i])();
+            return;
+        }
+    }
+    // aqui só chega se nenhum nível bateu
+}
+```
+
+Os dois arrays ficam na mesma ordem (posição 0 de `levels` corresponde à posição 0 de `complaints`), então o índice onde `level` bate em `levels` é o mesmo índice do método certo a chamar. Um `for` pequeno substitui a floresta de `if/else if/else` que o exercício proíbe.
+
+`static` nos arrays é opcional (só eficiência): sem ele, os arrays seriam recriados do zero a cada chamada de `complain()`, mesmo os valores nunca mudando entre chamadas. Com `static`, são montados uma única vez.
+
+---
+
 ## Dúvidas / a aprofundar
 
-- [ ] Ponteiros para membros de função (ex05).
-- [ ] Declaração switch (ex06, opcional).
 - [ ] Testar com valgrind no ambiente da 42 antes de submeter.
