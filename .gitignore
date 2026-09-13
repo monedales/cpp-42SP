@@ -12,6 +12,7 @@ harl
 fixed
 fixedFloat
 fixedOps
+clapTrap
 # Object files
 *.o
 obj/
