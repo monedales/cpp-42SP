@@ -9,6 +9,9 @@ refs
 fight
 losers
 harl
+fixed
+fixedFloat
+fixedOps
 # Object files
 *.o
 obj/
