@@ -8,6 +8,7 @@ zombieHorde
 refs
 fight
 losers
+harl
 # Object files
 *.o
 obj/
