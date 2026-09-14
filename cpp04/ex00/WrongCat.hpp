@@ -8,13 +8,13 @@
 
 class	WrongCat : public WrongAnimal
 {
-public:
-	WrongCat();
-	WrongCat(const WrongCat &obj);
-	WrongCat &operator=(const WrongCat &obj);
-	~WrongCat();
+	public:
+		WrongCat();
+		WrongCat(const WrongCat &obj);
+		WrongCat &operator=(const WrongCat &obj);
+		~WrongCat();
 
-	void	makeSound() const;
+		void	makeSound() const;
 };
 
 #endif

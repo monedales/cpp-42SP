@@ -8,13 +8,13 @@
 
 class	Dog : public Animal
 {
-public:
-	Dog();
-	Dog(const Dog &obj);
-	Dog &operator=(const Dog &obj);
-	~Dog();
+	public:
+		Dog();
+		Dog(const Dog &obj);
+		Dog &operator=(const Dog &obj);
+		~Dog();
 
-	void	makeSound() const;
+		void	makeSound() const;
 };
 
 #endif
