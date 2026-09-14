@@ -125,3 +125,19 @@ Igual o construtor de cópia pode chamar o construtor da base na lista de inicia
 - [ ] Revisitar o item 3 (delete sem destrutor virtual) com um exemplo onde a classe derivada tem atributo a mais que a base — aí sim dá pra ver o lado realmente perigoso (tamanho de bloco errado no `operator delete`), que aqui ficou "escondido" por `WrongCat` não ter atributo extra.
 - [ ] ex02: `Animal` vira abstrata (não instanciável) — atualizar esse arquivo com o que muda na prática.
 - [ ] ex03 (Materia/Character, interfaces puras) não vai ser feito nesse módulo por causa do prazo — se sobrar tempo depois da entrega, revisitar o conceito de interface pura (todos os métodos = 0).
+
+
+---
+
+Cópia rasa (shallow copy): quando você copia um objeto, e ele tem um ponteiro dentro, a cópia padrão só copia o endereço guardado no ponteiro — não o que tá lá dentro. Resultado: os dois objetos (original e cópia) acabam apontando pro mesmo bloco de memória.
+
+cpp
+Dog basic;             // basic.brain aponta pro Brain #1
+Dog tmp = basic;       // cópia rasa: tmp.brain também aponta pro Brain #1 (mesmo endereço!)
+
+Cópia profunda (deep copy): a cópia aloca um bloco de memória novo, e copia o conteúdo pra lá. Os dois objetos ficam com ponteiros diferentes, cada um pro seu próprio Brain.
+
+cpp
+Dog tmp = basic;       // cópia profunda: tmp.brain aponta pro Brain #2 (novo, com os mesmos dados)
+
+Por que isso importa na prática: se for rasa e tmp morrer primeiro (sai de escopo, chama o destrutor, dá delete no Brain #1), o basic continua com um ponteiro apontando pra memória que já foi liberada — um ponteiro "pendurado" (dangling). Usar ele depois é comportamento indefinido; e se o basic também morrer e tentar deletar o mesmo Brain #1 de novo, é um double free (crash na maioria das vezes).
