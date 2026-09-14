@@ -7,6 +7,9 @@ int main(void)
 	std::cout << "\n*** Test 1: Default constructor ***\n";
 	{
 		ScavTrap dScav;
+		std::cout << "dScav"; 
+		dScav.takeDamage(50);
+		std::cout << "-- se sobrou 50 de vida, prova que começou com 100 (nao 10) --\n";
 	}
 
 	std::cout << "\n*** Test 2: Named constructor (valores sobrescritos) ***\n";

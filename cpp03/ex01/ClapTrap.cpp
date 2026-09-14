@@ -3,7 +3,7 @@
 
 ClapTrap::ClapTrap(): hitPoints(10), energyPoints(10), attackDamage(0)
 {
-    std::cout << LILAC << "Default constructor called" << RESET << std::endl;
+    std::cout << LILAC << "Default ClapTrap constructor called" << RESET << std::endl;
 }
 
 ClapTrap::ClapTrap(const std::string &name): name(name), hitPoints(10), energyPoints(10), attackDamage(0)
@@ -38,12 +38,12 @@ ClapTrap &ClapTrap::operator=(const ClapTrap &obj)
 void   ClapTrap::attack(const std::string &target)
 {
     if (this->hitPoints == 0)
-        std::cout << PEACH << "ClapTrap " << this->name  << " has no hit points left!" << RESET <<  std::endl;
+        std::cout << PEACH << this->name  << " has no hit points left!" << RESET <<  std::endl;
     else if (this->energyPoints == 0)
-        std::cout << PEACH << "ClapTrap " << this->name  << " has not enough energy points!" << RESET <<  std::endl;
+        std::cout << PEACH << this->name  << " has not enough energy points!" << RESET <<  std::endl;
     else
     {
-        std::cout << RED << "ClapTrap " << this->name  << " attacks "  << target << ", causing " << this->attackDamage << " points of damage!" << RESET << std::endl;
+        std::cout << RED << this->name  << " attacks "  << target << ", causing " << this->attackDamage << " points of damage!" << RESET << std::endl;
         this->energyPoints--;
     }
 }
@@ -61,14 +61,14 @@ void   ClapTrap::takeDamage(unsigned int amount)
 void   ClapTrap::beRepaired(unsigned int amount)
 {
     if (this->hitPoints == 0)
-        std::cout << PEACH << "ClapTrap " << this->name << " has not enough hit points to be repaired!" << RESET << std::endl;
+        std::cout << PEACH << this->name << " has not enough hit points to be repaired!" << RESET << std::endl;
     else if (this->energyPoints == 0)
-        std::cout << PEACH << "ClapTrap " << this->name << " has not enough energy points!" << RESET << std::endl;
+        std::cout << PEACH << this->name << " has not enough energy points!" << RESET << std::endl;
     else
     {
         this->hitPoints += amount;
         this->energyPoints--;
-        std::cout << PURPLE << "ClapTrap " << this->name << " is repaired for " << amount
+        std::cout << PURPLE << this->name << " is repaired for " << amount
             << " hit points, now at " << this->hitPoints << " hit points!" << RESET << std::endl;
     }
 }
