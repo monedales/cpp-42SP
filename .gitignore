@@ -15,7 +15,7 @@ fixedOps
 claptrap
 scavtrap
 fragtrap
-
+animals 
 # Object files
 *.o
 obj/
