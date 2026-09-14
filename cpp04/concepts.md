@@ -120,24 +120,59 @@ Igual o construtor de cópia pode chamar o construtor da base na lista de inicia
 
 ---
 
+## 8. Cópia rasa (shallow) vs cópia profunda (deep)
+
+```cpp
+Dog basic;             // basic.brain aponta pro Brain #1
+Dog tmp = basic;       // cópia RASA: tmp.brain também aponta pro Brain #1 (mesmo endereço!)
+```
+
+Quando um objeto tem um ponteiro cru dentro, a cópia **gerada automaticamente pelo compilador** só copia o valor guardado no ponteiro — ou seja, o **endereço**, não o que tá lá dentro. Os dois objetos acabam apontando pro mesmo bloco de memória. Se `tmp` morre primeiro (sai de escopo, destrutor roda, `delete` no Brain #1), `basic` fica com um ponteiro "pendurado" (dangling) pra memória já liberada. Usar isso depois é UB; se `basic` também morrer e tentar deletar o mesmo Brain de novo, é **double free**.
+
+```cpp
+Dog::Dog(const Dog &obj): Animal(obj)
+{
+	this->brain = new Brain(*obj.brain);   // cópia PROFUNDA: bloco novo, conteúdo copiado
+}
+```
+
+Cópia profunda aloca um bloco **novo** e copia o conteúdo pra lá — os dois objetos ficam com ponteiros diferentes, cada um dono do seu próprio Brain. É isso que o construtor de cópia e o `operator=` do `Dog`/`Cat` fazem manualmente (o exercício existe justamente pra forçar escrever isso à mão, em vez de confiar na cópia automática do compilador).
+
+---
+
+## 9. Por que o `Brain` não precisa de ponteiro interno, mas o `Dog`/`Cat` precisam apontar pra ele
+
+```cpp
+class Brain
+{
+private:
+	std::string	ideas[100];   // array de objetos, não de ponteiros
+};
+```
+
+`Brain` só guarda `std::string`, que já sabe se copiar direito sozinha (sem vazar, sem endereço compartilhado) — então a cópia campo-a-campo do `Brain` é segura por natureza, sem precisar de nenhum cuidado especial. O perigo mora exatamente onde existe um **ponteiro cru gerenciado manualmente** (`new`/`delete`) — é aí que a cópia padrão do compilador (que só copia o endereço) quebra. O subject bota o `Brain*` no `Dog`/`Cat` de propósito, pra criar esse cenário.
+
+---
+
+## 10. Destrutor virtual reafirmado: array misto de `Animal*`
+
+```cpp
+Animal* animals[4];
+animals[0] = new Dog();
+animals[1] = new Dog();
+animals[2] = new Cat();
+animals[3] = new Cat();
+...
+for (int i = 0; i < 4; i++)
+	delete animals[i];   // cada delete dispara Brain -> Dog/Cat -> Animal, na ordem certa
+```
+
+Esse teste é o item 3 na prática, só que agora com objetos que **têm** algo a perder (o `Brain` alocado): se o destrutor de `Animal` não fosse `virtual`, `delete animals[i]` chamaria só `~Animal()`, o `Brain` de cada `Dog`/`Cat` nunca seria deletado, e `leaks` acusaria memória perdida — diferente do `WrongCat` do ex00, aqui o vazamento seria real e visível, não só teórico.
+
+---
+
 ## Dúvidas / a aprofundar
 
 - [ ] Revisitar o item 3 (delete sem destrutor virtual) com um exemplo onde a classe derivada tem atributo a mais que a base — aí sim dá pra ver o lado realmente perigoso (tamanho de bloco errado no `operator delete`), que aqui ficou "escondido" por `WrongCat` não ter atributo extra.
 - [ ] ex02: `Animal` vira abstrata (não instanciável) — atualizar esse arquivo com o que muda na prática.
 - [ ] ex03 (Materia/Character, interfaces puras) não vai ser feito nesse módulo por causa do prazo — se sobrar tempo depois da entrega, revisitar o conceito de interface pura (todos os métodos = 0).
-
-
----
-
-Cópia rasa (shallow copy): quando você copia um objeto, e ele tem um ponteiro dentro, a cópia padrão só copia o endereço guardado no ponteiro — não o que tá lá dentro. Resultado: os dois objetos (original e cópia) acabam apontando pro mesmo bloco de memória.
-
-cpp
-Dog basic;             // basic.brain aponta pro Brain #1
-Dog tmp = basic;       // cópia rasa: tmp.brain também aponta pro Brain #1 (mesmo endereço!)
-
-Cópia profunda (deep copy): a cópia aloca um bloco de memória novo, e copia o conteúdo pra lá. Os dois objetos ficam com ponteiros diferentes, cada um pro seu próprio Brain.
-
-cpp
-Dog tmp = basic;       // cópia profunda: tmp.brain aponta pro Brain #2 (novo, com os mesmos dados)
-
-Por que isso importa na prática: se for rasa e tmp morrer primeiro (sai de escopo, chama o destrutor, dá delete no Brain #1), o basic continua com um ponteiro apontando pra memória que já foi liberada — um ponteiro "pendurado" (dangling). Usar ele depois é comportamento indefinido; e se o basic também morrer e tentar deletar o mesmo Brain #1 de novo, é um double free (crash na maioria das vezes).

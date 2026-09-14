@@ -56,12 +56,31 @@
 
 > Nova classe `Brain` (privada em `Dog`/`Cat`, não em `Animal`). Cópia de `Dog`/`Cat` precisa ser profunda — senão dois objetos acabam apontando pro mesmo `Brain` e um `delete` duplo estraga tudo.
 
-- [ ] Ainda não iniciado.
-- [ ] `Brain` criado, com saída própria de criação/remoção
-- [ ] `Dog`/`Cat` ganham `Brain*` privado (não pode morar em `Animal`)
-- [ ] Cópia (construtor e `operator=`) é profunda — testar criando um `Dog`, copiando pra um escopo interno, e conferindo que o `Brain` original sobrevive ao fim do escopo
-- [ ] Destrutor do `Animal` precisa ser `virtual` (isso já foi resolvido no ex00, então essa parte já está pronta)
-- [ ] Forma canônica ortodoxa completa, nada público sem necessidade
+### Makefile
+
+- [x] Existe um Makefile que compila usando as flags apropriadas
+- [x] `WrongAnimal`/`WrongCat` do ex00 presentes na pasta pra entrega (fora do `SRC` — o subject pede "files from previous exercise" no turn-in)
+
+### Classe Brain
+
+- [x] `Brain` criado, com `ideas[100]` (`std::string`) e saída própria de criação/remoção
+
+### Dog/Cat com Brain
+
+- [x] `Dog`/`Cat` ganham `Brain*` privado (não mora em `Animal`)
+- [x] Construtor faz `new Brain()`, destrutor faz `delete` no Brain
+
+### Cópia profunda
+
+- [x] Testado: `Dog basic; { Dog tmp = basic; }` — `basic` continua intacto depois que `tmp` sai de escopo (cópia rasa causaria double free aqui)
+- [x] Mesmo teste pro `Cat`
+- [x] `operator=` também testado (`dogB = dogA`) — descarta o Brain antigo antes de alocar o novo
+
+### Array misto + destrutor virtual
+
+- [x] Array de `Animal*` (2 Dog + 2 Cat) deletado via ponteiro base — cada delete dispara `Brain` → `Dog`/`Cat` → `Animal` na ordem certa
+- [x] Forma canônica ortodoxa completa nas 4 classes (Animal, Dog, Cat, Brain), nada público sem necessidade
+- [x] Sem vazamento de memória (`leaks --atExit`, 0 leaks)
 
 ---
 
