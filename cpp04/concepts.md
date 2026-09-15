@@ -171,8 +171,85 @@ Esse teste é o item 3 na prática, só que agora com objetos que **têm** algo 
 
 ---
 
+## 11. Como provar na main que a cópia é profunda
+
+```cpp
+Dog basic;
+basic.getBrain()->setIdea(0, "quero passear");
+Dog tmp = basic;
+tmp.getBrain()->setIdea(0, "quero dormir");
+
+std::cout << basic.getBrain() << " " << basic.getBrain()->getIdea(0) << std::endl;
+std::cout << tmp.getBrain()   << " " << tmp.getBrain()->getIdea(0)   << std::endl;
+// endereços diferentes, e basic continua com "quero passear"
+```
+
+Só ver que o programa não quebrou não prova nada — o subject pede pra **testar** que a cópia é profunda. Pra isso o `Brain` ganhou `setIdea`/`getIdea` e o `Dog`/`Cat` ganharam `getBrain()`. Aí dá pra mostrar duas coisas:
+
+- **endereços diferentes**: cada um tem o seu próprio `Brain`;
+- **mudar a cópia não mexe na original**: a ideia de `basic` continua igual.
+
+Se fosse cópia rasa (`this->brain = obj.brain`), os endereços sairiam iguais, a ideia mudaria nos dois, e no fim do programa daria double free.
+
+O mesmo teste vale pro `operator=` (`dogB = dogA`): logo depois da atribuição as ideias são iguais, mas os endereços são diferentes.
+
+---
+
+## 12. Classe abstrata: função virtual pura (`= 0`) — ex02
+
+```cpp
+class Animal
+{
+public:
+	virtual ~Animal();
+	virtual void	makeSound() const = 0;   // pura
+};
+```
+
+O `= 0` quer dizer: "`Animal` não tem um som próprio — cada filha **é obrigada** a criar o seu". Basta uma função pura pra classe inteira virar **abstrata**, e classe abstrata não pode virar objeto:
+
+```cpp
+Animal a;                   // erro: variable type 'Animal' is an abstract class
+Animal* p = new Animal();   // erro: allocating an object of abstract class type 'Animal'
+```
+
+O que **continua funcionando**:
+
+```cpp
+const Animal* j = new Dog();   // ok: o objeto real é um Dog
+j->makeSound();                // Woof!
+delete j;                      // destrutor virtual continua necessário
+```
+
+Ou seja: ponteiro e referência pra `Animal` pode; objeto `Animal` "puro" não. Faz sentido — um "animal genérico" não existe, só cachorro, gato etc.
+
+Se uma filha **não** implementar `makeSound()`, ela também vira abstrata e também não pode ser criada.
+
+O subject deixa (opcional) renomear pra `AAnimal`, com o "A" de abstrata, só pra deixar isso claro no nome.
+
+---
+
+## 13. Função pura pode ter corpo no `.cpp`, mas aqui não serve pra nada
+
+```cpp
+// Animal.hpp
+virtual void	makeSound() const = 0;
+
+// Animal.cpp — compila, mas é código morto
+void	Animal::makeSound() const
+{
+	std::cout << "...🎤" << std::endl;
+}
+```
+
+Quem torna a classe abstrata é o `= 0` no `.hpp`, não a falta de corpo. O C++ até deixa uma função pura ter corpo (por isso compilava), mas ninguém vai chamar esse corpo: não existe objeto que seja só `Animal`, e `Dog`/`Cat` usam o próprio `makeSound`. Por isso foi apagado no ex02 — não muda nada no funcionamento, só tira confusão.
+
+(O único jeito de chamar seria explicitamente de dentro de uma filha, tipo `Animal::makeSound();` — não é o caso aqui.)
+
+---
+
 ## Dúvidas / a aprofundar
 
 - [ ] Revisitar o item 3 (delete sem destrutor virtual) com um exemplo onde a classe derivada tem atributo a mais que a base — aí sim dá pra ver o lado realmente perigoso (tamanho de bloco errado no `operator delete`), que aqui ficou "escondido" por `WrongCat` não ter atributo extra.
-- [ ] ex02: `Animal` vira abstrata (não instanciável) — atualizar esse arquivo com o que muda na prática.
+- [x] ex02: `Animal` vira abstrata (não instanciável) — ver itens 12 e 13.
 - [ ] ex03 (Materia/Character, interfaces puras) não vai ser feito nesse módulo por causa do prazo — se sobrar tempo depois da entrega, revisitar o conceito de interface pura (todos os métodos = 0).
