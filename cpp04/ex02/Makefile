@@ -1,0 +1,96 @@
+CXX = c++
+INCLUDE = -I include
+FLAGS = -Wall -Wextra -Werror -std=c++98 $(INCLUDE)
+
+NAME = abstracts
+
+SRC = main.cpp \
+		Animal.cpp \
+		Dog.cpp \
+		Cat.cpp \
+		Brain.cpp
+
+OBJDIR = obj
+OBJ = $(SRC:%.cpp=$(OBJDIR)/%.o)
+
+# Colors
+ESC = \033[
+RESET = $(ESC)0m
+BOLD = $(ESC)1m
+GREEN = $(ESC)32m
+YELLOW = $(ESC)33m
+BLUE = $(ESC)34m
+MAGENTA = $(ESC)35m
+CYAN = $(ESC)36m
+WHITE = $(ESC)37m
+LILAC_TRUE   = \033[38;2;200;162;200m
+
+$(NAME) : $(OBJ)
+	@$(CXX) $(FLAGS) $(OBJ) -o $@
+	@$(MAKE) banner --no-print-directory
+
+$(OBJDIR)/%.o: %.cpp \
+		Animal.hpp \
+		Dog.hpp \
+		Cat.hpp \
+		Brain.hpp
+	@mkdir -p $(dir $@)
+	@$(CXX) $(FLAGS) -c $< -o $@
+	@$(call show_progress,$<)
+
+all : $(NAME)
+
+clean:
+	@rm -rf $(OBJDIR)
+	@echo "$(YELLOW)🧹 .o files cleaned$(RESET)"
+
+fclean: clean
+	@rm -f $(NAME)
+	@echo "$(YELLOW)$(BOLD)🧹 $(NAME)$(RESET)$(YELLOW) cleaned\n$(RESET)"
+
+re: fclean all
+
+banner:
+	@echo ""
+	@printf '%b\n' "$(LILAC_TRUE) ██████╗██████╗ ██████╗  ██████╗ ██╗  ██╗$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE)██╔════╝██╔══██╗██╔══██╗██╔═████╗██║  ██║$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE)██║     ██████╔╝██████╔╝██║██╔██║███████║$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE)██║     ██╔═══╝ ██╔═══╝ ████╔╝██║╚════██║$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE)╚██████╗██║     ██║     ╚██████╔╝     ██║$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE) ╚═════╝╚═╝     ╚═╝      ╚═════╝      ╚═╝$(RESET)"
+	@echo ""
+	@printf '%b\n' "$(LILAC_TRUE)           Ex02 — chega$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE)      made by: mona ✨ — 42 São Paulo, 2026$(RESET)"
+	@echo ""
+	@printf '%b\n' "$(GREEN)$(BOLD)  Compiled successfully! ✨$(RESET)"
+	@echo ""
+
+.PHONY: all re fclean clean banner
+
+TERM_WIDTH := $(shell tput cols 2>/dev/null || echo 80)
+SAFE_WIDTH := $(shell echo $$(($(TERM_WIDTH) - 10)))
+PROGRESS_WIDTH := $(shell echo $$(($(SAFE_WIDTH) > 50 ? 30 : $(SAFE_WIDTH) - 20)))
+
+TOTAL_FILES := $(words $(SRC))
+COMPILED_COUNT = 0
+VERBOSE ?= 0
+
+define show_progress
+    @$(eval COMPILED_COUNT=$(shell echo $$(($(COMPILED_COUNT)+1))))
+    @$(eval SHORT_PATH=$(shell echo $(1) | sed 's|^.*/||'))
+    @$(eval PERCENT=$(shell echo $$(($(COMPILED_COUNT)*100/$(TOTAL_FILES)))))
+    @$(eval BAR_SIZE=20)
+    @$(eval BARS=$(shell echo $$(($(COMPILED_COUNT)*$(BAR_SIZE)/$(TOTAL_FILES)))))
+    @$(eval REMAINING=$(shell echo $$(($(BAR_SIZE) - $(BARS)))))
+    @$(eval PROGRESS=$(shell printf '█%.0s' $$(seq 1 $(BARS))))
+    @$(eval EMPTY=$(shell printf '░%.0s' $$(seq 1 $(REMAINING))))
+
+    @if [ $(VERBOSE) -eq 1 ]; then \
+        echo "$(CYAN)$(BOLD)📄  Compiling $(RESET)$(CYAN)$(SHORT_PATH)$(RESET) ($(COMPILED_COUNT)/$(TOTAL_FILES))"; \
+    else \
+        printf "\r\033[K$(YELLOW)$(BOLD)🔄  $(RESET)$(GREEN)$(PROGRESS)$(WHITE)$(EMPTY)$(RESET) $(PERCENT)%% $(CYAN)$(SHORT_PATH)$(RESET)"; \
+        if [ $(COMPILED_COUNT) -eq $(TOTAL_FILES) ]; then \
+            printf "\n"; \
+        fi; \
+    fi
+endef

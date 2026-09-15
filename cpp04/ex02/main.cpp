@@ -8,10 +8,19 @@
 
 int main()
 {
-	std::cout << LABEL << "--- teste do subject ---" << RESET << std::endl;
+	std::cout << LABEL << "--- Animal e abstrata ---" << RESET << std::endl;
+	// Animal animalGenerico;						// nao compila: classe abstrata
+	// const Animal* ponteiroGenerico = new Animal();	// nao compila: classe abstrata
+	std::cout << LABEL << "-> Animal nao pode ser instanciado (descomente as linhas acima pra ver o erro)" << RESET << std::endl;
+
+	std::cout << "\n" << LABEL << "--- Dog e Cat via Animal* ---" << RESET << std::endl;
 	{
 		const Animal* j = new Dog();
 		const Animal* i = new Cat();
+		std::cout << j->getType() << " faz: ";
+		j->makeSound();
+		std::cout << i->getType() << " faz: ";
+		i->makeSound();
 		delete j;//should not create a leak
 		delete i;
 	}
