@@ -1,7 +1,8 @@
-#include <string>
-#include <exception>
 #ifndef BUREAUCRAT_HPP
 #define BUREAUCRAT_HPP
+#include <string>
+#include <exception>
+#include <iostream>
 
 
 class   Bureaucrat

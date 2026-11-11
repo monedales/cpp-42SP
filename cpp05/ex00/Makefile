@@ -2,7 +2,7 @@ CXX = c++
 INCLUDE = -I include
 FLAGS = -Wall -Wextra -Werror -std=c++98 $(INCLUDE)
 
-NAME = abstracts
+NAME = bureaucrat
 
 SRC = main.cpp Bureaucrat.cpp
 
@@ -26,7 +26,7 @@ $(NAME) : $(OBJ)
 	@$(MAKE) banner --no-print-directory
 
 $(OBJDIR)/%.o: %.cpp \
-	Bureaucrat.hpp \
+	Bureaucrat.hpp
 	@mkdir -p $(dir $@)
 	@$(CXX) $(FLAGS) -c $< -o $@
 	@$(call show_progress,$<)
@@ -45,14 +45,14 @@ re: fclean all
 
 banner:
 	@echo ""
-	@printf '%b\n' "$(LILAC_TRUE) ██████╗██████╗ ██████╗  ██████╗ ██╗  ██╗$(RESET)"
-	@printf '%b\n' "$(LILAC_TRUE)██╔════╝██╔══██╗██╔══██╗██╔═████╗██║  ██║$(RESET)"
-	@printf '%b\n' "$(LILAC_TRUE)██║     ██████╔╝██████╔╝██║██╔██║███████║$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE) ██████╗██████╗ ██████╗  ██████╗ ███████╗$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE)██╔════╝██╔══██╗██╔══██╗██╔═████╗██╔════╝$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE)██║     ██████╔╝██████╔╝██║██╔██║███████╗$(RESET)"
 	@printf '%b\n' "$(LILAC_TRUE)██║     ██╔═══╝ ██╔═══╝ ████╔╝██║╚════██║$(RESET)"
-	@printf '%b\n' "$(LILAC_TRUE)╚██████╗██║     ██║     ╚██████╔╝     ██║$(RESET)"
-	@printf '%b\n' "$(LILAC_TRUE) ╚═════╝╚═╝     ╚═╝      ╚═════╝      ╚═╝$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE)╚██████╗██║     ██║     ╚██████╔╝███████║$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE) ╚═════╝╚═╝     ╚═╝      ╚═════╝ ╚══════╝$(RESET)"
 	@echo ""
-	@printf '%b\n' "$(LILAC_TRUE)           (placeholder)Ex00 — Bureaucrat$(RESET)"
+	@printf '%b\n' "$(LILAC_TRUE)          📋 Ex00 — Bureaucrat$(RESET)"
 	@printf '%b\n' "$(LILAC_TRUE)      made by: mona ✨ — 42 São Paulo, 2026$(RESET)"
 	@echo ""
 	@printf '%b\n' "$(GREEN)$(BOLD)  Compiled successfully! ✨$(RESET)"
